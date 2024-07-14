@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-
-
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -18,13 +15,16 @@ import { RatingModule } from 'primeng/rating';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { PaginatorModule } from 'primeng/paginator';
-import { ListaReservasRoutingModule } from './lista-reservas-routing.module';
-import { ListaReservasComponent } from './lista-reservas.component';
+import { ReservasComponent } from './reservas.component';
+import { ReservasRoutingModule } from './reservas-routing.module';
+import { InputTextareaModule } from "primeng/inputtextarea";
+import { AccordionModule } from 'primeng/accordion';
+import { PasswordModule } from 'primeng/password';
 
 @NgModule({
     imports: [
         CommonModule,
-        ListaReservasRoutingModule,
+        ReservasRoutingModule,
         FormsModule,
         TableModule,
         RatingModule,
@@ -39,8 +39,11 @@ import { ListaReservasComponent } from './lista-reservas.component';
         ToastModule,
         DialogModule,
         CalendarModule,
-        PaginatorModule
+        PaginatorModule,
+        InputTextareaModule,
+        AccordionModule,
+        PasswordModule
     ],
-    declarations: [ListaReservasComponent]
+    declarations: [ReservasComponent]
 })
-export class ListaReservasModule { }
+export class ReservasModule { }

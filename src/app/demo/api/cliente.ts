@@ -1,8 +1,21 @@
 export interface Cliente {
-    id?: string;
+    id?: number;
     nombre?: string;
     apellido?: string;
     telefono?: string;
-    email?: number;
-    password?: number;
+    email?: string;    
+}
+
+export interface SigninRequest {
+    email?: string;
+    password?: string;
+}
+
+export interface Usuario {  
+    id?: number;  
+    nombre?: string;
+    apellido?: string;
+    telefono?: string;
+    email?: string;
+    password?: string;
 }
