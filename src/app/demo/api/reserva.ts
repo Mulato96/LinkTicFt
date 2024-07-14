@@ -7,4 +7,5 @@ export interface Reserva {
     detalles?: string;
     cliente?: Cliente;
     servicio?:Servicio;
+    clientnew?:boolean;   
 }

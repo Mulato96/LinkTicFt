@@ -39,12 +39,11 @@ export class SignUpComponent {
 
         this.authService.signup(this.signUpRequest)
             .subscribe(
-                response => {
-                    console.log("valor token", response);
+                response => {                    
                     const token = response.data.token;
                     localStorage.setItem('authToken', token);
                     alert("Usuario creado con exito!");
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/reservas']);
                 },
                 error => {
                     console.log('Error al guardar el Usuario:', error.error.messageError);

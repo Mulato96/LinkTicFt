@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Reserva } from '../api/reserva';
 import { Observable } from 'rxjs';
-import { SigninRequest, Usuario  } from '../api/cliente';
+import { SigninRequest, Usuario } from '../api/cliente';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +17,11 @@ export class AuthService {
 
     signin(signinRequest: SigninRequest): Observable<any> {
         return this.http.post<Reserva>(`${this.baseUrl}/login`, signinRequest);
+    }
+
+
+    isLoggedIn(): boolean {      
+        return !!localStorage.getItem('authToken');
     }
 
 

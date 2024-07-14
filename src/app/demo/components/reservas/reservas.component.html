@@ -6,7 +6,7 @@
 			<p-table #dt1 [value]="reservas" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
 				styleClass="p-datatable-gridlines" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
 				currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} registros"
-				[rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="['nombre','telefono','puestoTrabajo']"
+				[rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="['nombre','telefono','email']"
 				responsiveLayout="scroll">
 				<ng-template pTemplate="caption">
 					<div class="flex justify-content-between flex-column sm:flex-row">
@@ -47,6 +47,8 @@
 						<th>
 							<div class="flex justify-content-between align-items-center">
 								Nombre Servicio
+								<p-columnFilter type="text" field="servicio" display="menu"
+									placeholder="Buscar por Servicio"></p-columnFilter>
 							</div>
 						</th>
 						<th>
@@ -62,6 +64,8 @@
 						<th>
 							<div class="flex justify-content-between align-items-center">
 								Fecha Reserva
+								<p-columnFilter type="text" field="fecha" display="menu"
+									placeholder="Buscar por Fecha"></p-columnFilter>
 							</div>
 						</th>
 
@@ -97,10 +101,10 @@
 							{{reserva.servicio.descripcion}}
 						</td>
 						<td style="min-width: 10rem;">
-							{{reserva.servicio.precio}}
+							{{formatCurrency(reserva.servicio.precio)}}
 						</td>
 						<td style="min-width: 10rem;">
-							{{reserva.fecha | date: 'MM-dd-yyyy'}}
+							{{reserva.fecha | date: 'dd/MM/yyyy' }}
 						</td>
 						<td style="min-width: 10rem;">
 							{{reserva.detalles}}
@@ -118,12 +122,12 @@
 				</ng-template>
 				<ng-template pTemplate="emptymessage">
 					<tr>
-						<td colspan="7">No hay datos de reservas</td>
+						<td colspan="9">No hay datos de reservas</td>
 					</tr>
 				</ng-template>
 				<ng-template pTemplate="loadingbody">
 					<tr>
-						<td colspan="7">Cargando datos de reservas. Espere por favor.</td>
+						<td colspan="9">Cargando datos de reservas. Espere por favor.</td>
 					</tr>
 				</ng-template>
 			</p-table>
@@ -198,7 +202,7 @@
 
 		<div class="field">
 			<span class="p-float-label">
-				<p-calendar [required]="true" dateFormat="mm-dd-yy" [(ngModel)]="reserva.fecha"
+				<p-calendar [required]="true" dateFormat="dd/mm/yy" [(ngModel)]="reserva.fecha"
 					inputId="fechaNacimiento" appendTo="body"></p-calendar>
 				<label for="fechaNacimiento">Fecha Reserva</label>
 			</span>
@@ -206,8 +210,8 @@
 
 		<div class="field">
 			<span class="p-float-label">
-				<textarea rows="5" id="detalles" cols="30" [(ngModel)]="reserva.detalles" pInputTextarea required
-					autofocus></textarea>
+				<textarea rows="5" id="detalles" cols="30" [(ngModel)]="reserva.detalles" pInputTextarea
+					[required]="true" autofocus></textarea>
 				<label for="detalles">Detalles</label>
 			</span>
 		</div>
@@ -218,17 +222,17 @@
 		<button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
 			(click)="hideDialog()"></button>
 		<button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text"
-			(click)="saveReserva()"></button>
+			(click)="createOrUpdateCliente()"></button>
 	</ng-template>
 </p-dialog>
 
 <p-dialog [(visible)]="deleteReservaDialog" header="Confirmación" [modal]="true" [style]="{width:'450px'}">
-	<!--<div class="flex align-items-center justify-content-center">
+	<div class="flex align-items-center justify-content-center">
 		<i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-		<span *ngIf="reserva">¿Estás seguro de que quieres eliminar la reserva para <b>{{reserva.nombre}}
-				{{reserva.apellidos}}
+		<span *ngIf="reserva">¿Estás seguro de que quieres eliminar la reserva para <b>{{reserva.cliente?.nombre}}
+				{{reserva.cliente?.apellido}}
 			</b>?</span>
-	</div>-->
+	</div>
 	<ng-template pTemplate="footer">
 		<button pButton pRipple icon="pi pi-times" class="p-button-text" label="Cancelar"
 			(click)="deleteReservaDialog = false"></button>

@@ -1,4 +1,4 @@
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -40,7 +40,7 @@ import { FormatCurrencyPipe } from './demo/pipes/format-currency.pipe';
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
-        ReservaService, AuthService, ClienteService, ServicioService,FormatCurrencyPipe,
+        ReservaService, AuthService, ClienteService, ServicioService,FormatCurrencyPipe,DatePipe,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

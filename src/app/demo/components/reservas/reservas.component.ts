@@ -7,6 +7,8 @@ import { Cliente } from '../../api/cliente';
 import { Servicio } from '../../api/servicio';
 import { ClienteService } from '../../service/cliente.service';
 import { ServicioService } from '../../service/servicio.service';
+import { DatePipe } from '@angular/common';
+import { FormatCurrencyPipe } from '../../pipes/format-currency.pipe';
 
 
 /**
@@ -41,20 +43,18 @@ export class ReservasComponent implements OnInit {
 
     @ViewChild('filter') filter!: ElementRef;
 
-    repeatpass: String = "";
 
     isNuevoCliente: boolean = false;
 
-    constructor(private reservasService: ReservaService, private messageService: MessageService, private clienteService: ClienteService, private servicioService: ServicioService) { }
+    objCliente: any = {};
 
-    ngOnInit() {
+    constructor(private reservasService: ReservaService, private messageService: MessageService, private clienteService: ClienteService, private servicioService: ServicioService, private datePipe: DatePipe, private formatCurrencyPipe: FormatCurrencyPipe) { }
+
+    ngOnInit() {        
         this.getAllClientes();
         this.getAllServicios();
+        this.getAllReservas();
 
-        this.reservasService.obtenerReservas().subscribe(obj => {
-            this.reservas = obj.data;
-            this.loading = false;
-        });
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -74,26 +74,75 @@ export class ReservasComponent implements OnInit {
     hideDialog() {
         this.reserva = {};
         this.cliente = {};
-        this.repeatpass = "";
         this.isNuevoCliente = false;
         this.reservaDialog = false;
     }
 
-    saveReserva() {
-
+    createOrUpdateCliente() {
         if (this.isNuevoCliente) {
-            if (!this.validarCampo(this.reserva.cliente?.nombre, 'Nombre Cliente')) return;
-            if (!this.validarCampo(this.reserva.cliente?.apellido, 'Apellido Cliente')) return;
-            if (!this.validarCampo(this.reserva.cliente?.email, 'Email Cliente')) return;
-            if (!this.validarEmail(this.reserva.cliente?.email)) return;
-            if (!this.validarCampo(this.reserva.cliente?.telefono, 'Telefono Cliente')) return;
+            if (!this.validarCampo(this.cliente?.nombre, 'Nombre Cliente')) return;
+            if (!this.validarCampo(this.cliente.apellido, 'Apellido Cliente')) return;
+            if (!this.validarCampo(this.cliente?.telefono, 'Telefono Cliente')) return;
+            if (!this.validarCampo(this.cliente?.email, 'Email Cliente')) return;
+            if (!this.validarEmail(this.cliente?.email)) return;
+
+        } else {
+            if (!this.validarCampo(this.reserva.cliente?.id, 'Cliente')) return;
         }
 
 
+        if (!this.validarCampo(this.reserva.servicio?.id, 'Servicio')) return;
+        if (!this.validarCampo(this.reserva.fecha, 'Fecha')) return;
+        if (!this.validarCampo(this.reserva.detalles, 'Detalles')) return;
+
+        if (this.reserva.id) {
+            this.updateReserva();
+        } else {
+            this.createReserva();
+        }
+    }
+
+    updateReserva() {
+        debugger
+        this.reservasService.actualizarReserva(this.reserva.id, this.reserva)
+            .subscribe(
+                response => {
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Reserva Actualizada exitosamente' });
+                    this.getAllReservas();
+                },
+                error => {
+                    console.error('Error al guardar la reserva:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la reserva' });
+                }
+            );
+
+        this.hideDialog();
     }
 
 
-    validarCampo(valor: string | undefined, nombreCampo: string): boolean {
+    createReserva() {
+        if (this.isNuevoCliente) {
+            this.reserva.cliente = this.cliente;
+            this.reserva.clientnew = this.isNuevoCliente;
+        }
+        this.reservasService.crearReserva(this.reserva)
+            .subscribe(
+                response => {
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Reserva guardada exitosamente' });
+                    this.getAllReservas();
+                },
+                error => {
+                    console.error('Error al guardar la reserva:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la reserva' });
+                }
+            );
+
+        this.hideDialog();
+    }
+
+
+
+    validarCampo(valor: string | undefined | number, nombreCampo: string): boolean {
         if (!valor) {
             this.messageService.add({ severity: 'warn', summary: 'Atencion!', detail: `${nombreCampo} es requerido`, life: 3000 });
             return false;
@@ -104,9 +153,15 @@ export class ReservasComponent implements OnInit {
 
 
 
-    editReserva(reservaInt: Reserva) {
+    editReserva(reservaInt: Reserva) {            
         this.reserva = { ...reservaInt };
         this.reservaDialog = true;
+    }
+
+
+
+    formatearFecha(fecha: string | undefined): string {
+        return this.datePipe.transform(fecha, 'dd-MM-yyyy') || '';
     }
 
     deleteReserva(reservaInt: Reserva) {
@@ -116,8 +171,16 @@ export class ReservasComponent implements OnInit {
 
     confirmDelete() {
         this.deleteReservaDialog = false;
-        this.reservas = this.reservas.filter(val => val.id !== this.reserva.id);
-        this.messageService.add({ severity: 'success', summary: 'Exito', detail: 'Reserva Eliminada', life: 3000 });
+        this.reservasService.eliminarReserva(this.reserva.id)
+            .subscribe(
+                response => {
+                    this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Reserva eliminada exitosamente' });
+                    this.getAllReservas();
+                },
+                error => {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar la reserva ' + error });
+                }
+            );
         this.reserva = {};
     }
 
@@ -127,7 +190,7 @@ export class ReservasComponent implements OnInit {
             this.clientes = obj.data;
             this.clienteDropdownOptions = this.clientes.map((cliente: Cliente) => ({
                 label: cliente.nombre!,
-                value: cliente.id
+                value: cliente
             }));
             this.clienteDropdownOptions.push({ label: 'Nuevo cliente', value: 'nuevo' });
             this.loading = false;
@@ -138,8 +201,15 @@ export class ReservasComponent implements OnInit {
         this.servicioService.obtenerServicios().subscribe(obj => {
             this.servicios = obj.data.map((servicio: Servicio) => ({
                 label: servicio.nombre,
-                value: servicio.id
+                value: servicio
             }));
+            this.loading = false;
+        });
+    }
+
+    getAllReservas() {
+        this.reservasService.obtenerReservas().subscribe(obj => {
+            this.reservas = obj.data;
             this.loading = false;
         });
     }
@@ -151,13 +221,20 @@ export class ReservasComponent implements OnInit {
     validarEmail(email: string | undefined): boolean {
         if (!email) {
             alert("Email es requerido");
+            this.messageService.add({ severity: 'warn', summary: 'Atencion!', detail: "Email es requerido", life: 3000 });
             return false;
         }
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!regex.test(email)) {
-            alert("Por favor, ingrese un email válido");
+            this.messageService.add({ severity: 'warn', summary: 'Atencion!', detail: "Por favor, ingrese un email válido", life: 3000 });
             return false;
         }
         return true;
+    }
+
+
+    // Método para formatear el valor a moneda
+    formatCurrency(value: number): string {
+        return this.formatCurrencyPipe.transform(value);
     }
 }

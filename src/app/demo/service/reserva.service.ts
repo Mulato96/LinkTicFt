@@ -14,15 +14,16 @@ export class ReservaService {
         return this.http.post<Reserva>(`${this.baseUrl}`, reserva);
     }
 
+
     obtenerReservas(): Observable<any> {
         return this.http.get<Reserva[]>(`${this.baseUrl}`);
     }
 
-    actualizarReserva(id: number, reserva: Reserva): Observable<Reserva> {
-        return this.http.put<Reserva>(`${this.baseUrl}/${id}`, reserva);
+    actualizarReserva(id: number | undefined, reservaDTO: Reserva): Observable<Reserva> {
+        return this.http.put<Reserva>(`${this.baseUrl}/${id}`, reservaDTO);
     }
 
-    eliminarReserva(id: number): Observable<void> {
+    eliminarReserva(id: number | undefined): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
 

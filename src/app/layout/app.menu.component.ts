@@ -17,32 +17,11 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Gestion',
                 items: [
-                    { label: 'Reservas', icon: 'pi pi-fw pi-calendar', routerLink: ['/'] },                   
+                    { label: 'Reservas', icon: 'pi pi-fw pi-calendar', routerLink: ['/reservas'] },
                     { label: 'Clientes', icon: 'pi pi-fw pi-user', routerLink: ['/clientes'] },
                     { label: 'Servicios', icon: 'pi pi-fw pi-shopping-cart', routerLink: ['/servicios'] },
                 ]
-            },            
-            {
-                label: 'Auth',
-                icon: 'pi pi-fw pi-user',
-                items: [
-                    {
-                        label: 'Login',
-                        icon: 'pi pi-fw pi-sign-in',
-                        routerLink: ['/auth/login']
-                    },
-                    {
-                        label: 'Error',
-                        icon: 'pi pi-fw pi-times-circle',
-                        routerLink: ['/auth/error']
-                    },
-                    {
-                        label: 'Access Denied',
-                        icon: 'pi pi-fw pi-lock',
-                        routerLink: ['/auth/access']
-                    }
-                ]
-            },
+            }
         ];
     }
 }
